@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://period-tracker-backend-cx4z.onrender.com/api/:path*"
+    }
+  ]
+}
