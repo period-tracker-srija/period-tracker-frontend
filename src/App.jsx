@@ -3,6 +3,7 @@ import './index.css';
 import { toLocalDateString } from "./utils/dateUtils";
 import Calendar from "./Calendar";
 import FullLogModal from "./FullLogModal";
+import HistoryList from "./HistoryList";
 
 function App() {
     const [logsByDate, setLogsByDate] = useState({});
@@ -29,6 +30,8 @@ function App() {
         fetch('/api/daily-logs')
             .then(res => res.json())
             .then(data => {
+                setLogs(data);
+
                 const map = {};
                 data.forEach(log => {
                     map[log.logDate] = log.cycleDayType;
@@ -71,6 +74,10 @@ function App() {
             .then(res => res.json())
             .then(savedLog => {
                 setLogsByDate(prev => ({ ...prev, [savedLog.logDate]: savedLog.cycleDayType }));
+                setLogs(prev => {
+                    const without = prev.filter(log => log.logDate !== savedLog.logDate);
+                    return [...without, savedLog];
+                });
                 closeDropdown();
             });
     };
@@ -97,6 +104,7 @@ function App() {
                     delete updated[dateString];
                     return updated;
                 });
+                setLogs(prev => prev.filter(log => log.logDate !== dateString));
                 closeDropdown();
             });
     };
@@ -106,6 +114,11 @@ function App() {
             ...prev,
             [savedLog.logDate]: savedLog.cycleDayType,
         }));
+
+        setLogs(prev => {
+            const without = prev.filter(log => log.logDate !== savedLog.logDate);
+            return [...without, savedLog];
+        });
     };
 
     const handleFullLogDeleted = (deletedDate) => {
@@ -114,6 +127,8 @@ function App() {
             delete updated[deletedDate];
             return updated;
         });
+
+        setLogs(prev => prev.filter(log => log.logDate !== deletedDate))
     };
 
     const dropdownDateString = dropdown ? toLocalDateString(dropdown.date) : null;
@@ -121,12 +136,29 @@ function App() {
     const [fullLogDate, setFullLogDate] = useState(null);
 
     const handleOpenFullLogFromCalendar = () => {
-    setFullLogDate(toLocalDateString(dropdown.date));
-    setShowFullLog(true);
-    closeDropdown();
-};
+        setFullLogDate(toLocalDateString(dropdown.date));
+        setShowFullLog(true);
+        closeDropdown();
+    };
+
+    const handleEditFromHistory = (dateString) => {
+        setFullLogDate(dateString);
+        setShowFullLog(true);
+    };
+
+    const handleDeleteFromHistory = (dateString) => {
+        if (!window.confirm('Delete this log entirely')) return;
+
+        fetch(`/api/daily-logs/${dateString}`, { method: 'DELETE' })
+            .then(() => {
+                handleFullLogDeleted(dateString);
+            });
+    };
 
     const [symptomTypes, setSymptomTypes] = useState([]);
+
+    const [logs, setLogs] = useState([]);
+    const [view, setView] = useState('calendar');
 
     return (
         <div className="min-h-screen flex flex-col px-6 py-6">
@@ -135,19 +167,41 @@ function App() {
                     Period Tracker
                 </h1>
 
-                <button
-                    className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
-                    onClick={() => {
-                        setFullLogDate(toLocalDateString(new Date()));
-                        setShowFullLog(true);
-                    }}
-                >
-                    Log
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        className={`px-4 py-2 rounded ${
+                            view === 'history'
+                                ? 'bg-gray-800 text-white'
+                                : 'border border-gray-300 hover:bg-gray-50'
+                        }`}
+                        onClick={() => setView(view === 'history' ? 'calendar' : 'history')}
+                    >
+                        {view === 'history' ? 'Calendar' : 'History'}
+                    </button>
+
+                    <button
+                        className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
+                        onClick={() => {
+                            setFullLogDate(toLocalDateString(new Date()));
+                            setShowFullLog(true);
+                        }}
+                    >
+                        Log
+                    </button>
+                </div>
             </div>
             
-            <div className="flex-1 flex items-center justify-center ">
-                <Calendar logsByDate={logsByDate} onDateClick={handleDateClick} />
+            <div className="flex-1 flex items-center justify-center mt-6">
+                {view === 'calendar' ? (
+                    <Calendar logsByDate={logsByDate} onDateClick={handleDateClick} />
+                ) : (
+                    <HistoryList
+                        logs={logs}
+                        symptomTypes={symptomTypes}
+                        onEdit={handleEditFromHistory}
+                        onDelete={handleDeleteFromHistory}
+                    />
+                )}
             </div>
 
             {dropdown && (
