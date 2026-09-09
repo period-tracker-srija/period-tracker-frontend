@@ -39,7 +39,7 @@ function Calendar({ logsByDate, onDateClick }) {
   };
 
   return (
-    <div className="max-w-sm mx-auto">
+    <div className="w-full max-w-md">
       <div className="flex justify-between items-center mb-2.5">
         <button className="px-2 py-1 rounded hover:bg-gray-100" onClick={goToPreviousMonth}>&lt;</button>
         <h2 className="text-lg font-semibold">{MONTH_NAMES[month]} {year}</h2>
@@ -53,7 +53,7 @@ function Calendar({ logsByDate, onDateClick }) {
 
         {cells.map((date, index) => {
           if (!date) {
-            return <div key={index} className="py-2.5"></div>;
+            return <div key={index} className="py-4"></div>;
           }
 
           const dateString = toLocalDateString(date);
@@ -62,7 +62,7 @@ function Calendar({ logsByDate, onDateClick }) {
           return (
             <div
               key={index}
-              className="text-center py-2.5 rounded-full cursor-pointer hover:bg-gray-100"
+              className="text-center py-4 rounded-full cursor-pointer hover:bg-gray-100"
               style={logType ? { backgroundColor: logType.color, color: 'white' } : {}}
               onClick={(e) => onDateClick(date, e)}
             >

@@ -129,19 +129,26 @@ function App() {
     const [symptomTypes, setSymptomTypes] = useState([]);
 
     return (
-        <div>
-            <h1>Period Tracker</h1>
-            <Calendar logsByDate={logsByDate} onDateClick={handleDateClick} />
+        <div className="min-h-screen flex flex-col px-6 py-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-semibold text-gray-800">
+                    Period Tracker
+                </h1>
 
-            <button
-                className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
-                onClick={() => {
-                    setFullLogDate(toLocalDateString(new Date()));
-                    setShowFullLog(true);
-                }}
-            >
-                Log
-            </button>
+                <button
+                    className="px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600"
+                    onClick={() => {
+                        setFullLogDate(toLocalDateString(new Date()));
+                        setShowFullLog(true);
+                    }}
+                >
+                    Log
+                </button>
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center ">
+                <Calendar logsByDate={logsByDate} onDateClick={handleDateClick} />
+            </div>
 
             {dropdown && (
                 <>
