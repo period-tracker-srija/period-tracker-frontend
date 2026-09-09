@@ -4,6 +4,7 @@ import { toLocalDateString } from "./utils/dateUtils";
 import Calendar from "./Calendar";
 import FullLogModal from "./FullLogModal";
 import HistoryList from "./HistoryList";
+import CustomizePage from "./CustomizePage";
 
 function App() {
     const [logsByDate, setLogsByDate] = useState({});
@@ -170,13 +171,35 @@ function App() {
                 <div className="flex gap-2">
                     <button
                         className={`px-4 py-2 rounded ${
+                            view === 'calendar'
+                                ? 'bg-gray-800 text-white'
+                                : 'border border-gray-300 hover:bg-gray-50'
+                        }`}
+                        onClick={() => setView('calendar')}
+                    >
+                        Calendar
+                    </button>
+
+                    <button
+                        className={`px-4 py-2 rounded ${
                             view === 'history'
                                 ? 'bg-gray-800 text-white'
                                 : 'border border-gray-300 hover:bg-gray-50'
                         }`}
-                        onClick={() => setView(view === 'history' ? 'calendar' : 'history')}
+                        onClick={() => setView('history')}
                     >
-                        {view === 'history' ? 'Calendar' : 'History'}
+                        History
+                    </button>
+
+                    <button
+                        className={`px-4 py-2 rounded ${
+                            view === 'customize'
+                                ? 'bg-gray-800 text-white'
+                                : 'border border-gray-300 hover:bg-gray-50'
+                        }`}
+                        onClick={() => setView('customize')}
+                    >
+                        Customize
                     </button>
 
                     <button
@@ -189,18 +212,27 @@ function App() {
                         Log
                     </button>
                 </div>
+
             </div>
             
+            {/* main context block */}
             <div className="flex-1 flex items-center justify-center mt-6">
-                {view === 'calendar' ? (
+                
+                {view === 'calendar' && (
                     <Calendar logsByDate={logsByDate} onDateClick={handleDateClick} />
-                ) : (
+                )}
+
+                {view === 'history' && (
                     <HistoryList
                         logs={logs}
                         symptomTypes={symptomTypes}
                         onEdit={handleEditFromHistory}
                         onDelete={handleDeleteFromHistory}
                     />
+                )}
+
+                {view === 'customize' && (
+                    <CustomizePage />
                 )}
             </div>
 

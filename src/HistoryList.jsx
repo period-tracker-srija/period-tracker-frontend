@@ -51,7 +51,7 @@ function HistoryList({ logs, symptomTypes, onEdit, onDelete }) {
                             )}
                         </div>
 
-                        <div className="text-sm text-gray-500 mt-` truncate">
+                        <div className="text-sm text-gray-500 mt-1 truncate">
                             {formatSymptomPreview(log.symptoms, symptomTypes)}
                         </div>
                     </div>
