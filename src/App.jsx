@@ -156,6 +156,46 @@ function App() {
             });
     };
 
+    const handleCycleDayTypeUpdated = (updated) => {
+        setLogsByDate(prev => {
+            const next = { ...prev };
+            Object.keys(next).forEach(date => {
+                if (next[date] && next[date].id === updated.id) {
+                    next[date] = updated;
+                }
+            });
+            return next;
+        });
+
+        setLogs(prev =>
+            prev.map(log =>
+                log.cycleDayType && log.cycleDayType.id === updated.id
+                    ? { ...log, cycleDayType: updated }
+                    : log
+            )
+        );
+    };
+
+    const handleCycleDayTypeDeleted = (deletedId) => {
+        setLogsByDate(prev => {
+            const next = { ...prev };
+            Object.keys(next).forEach(date => {
+                if(next[date] && next[date].id === deletedId) {
+                    delete next[date];
+                }
+            });
+            return next;
+        });
+
+        setLogs(prev =>
+            prev.map(log => 
+                log.cycleDayType && log.cycleDayType.id === deletedId
+                ? { ...log, cycleDayType: null}
+                : log
+            )
+        );
+    };
+
     const [symptomTypes, setSymptomTypes] = useState([]);
 
     const [logs, setLogs] = useState([]);
@@ -232,7 +272,12 @@ function App() {
                 )}
 
                 {view === 'customize' && (
-                    <CustomizePage />
+                    <CustomizePage 
+                        cycleDayTypes={cycleDayTypes}
+                        onCycleDayTypesChange={setCycleDayTypes}
+                        onTypeUpdated={handleCycleDayTypeUpdated}
+                        onTypeDeleted={handleCycleDayTypeDeleted}
+                    />
                 )}
             </div>
 
