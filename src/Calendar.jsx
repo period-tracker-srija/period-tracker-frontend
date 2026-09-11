@@ -39,11 +39,11 @@ function Calendar({ logsByDate, onDateClick }) {
   };
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md border border-[#e0d5c6] rounded-3xl p-4 bg-[#fbf8f3] shadow-sm">
       <div className="flex justify-between items-center mb-2.5">
-        <button className="px-2 py-1 rounded hover:bg-gray-100" onClick={goToPreviousMonth}>&lt;</button>
-        <h2 className="text-lg font-semibold">{MONTH_NAMES[month]} {year}</h2>
-        <button className="px-2 py-1 rounded hover:bg-gray-100" onClick={goToNextMonth}>&gt;</button>
+        <button className="px-2 py-1 rounded hover:bg-[#faf0e6] text-stone-600" onClick={goToPreviousMonth}>&lt;</button>
+        <h2 className="text-lg font-semibold text-stone-800">{MONTH_NAMES[month]} {year}</h2>
+        <button className="px-2 py-1 rounded hover:bg-[#faf0e6] text-stone-600" onClick={goToNextMonth}>&gt;</button>
       </div>
 
       <div className="grid grid-cols-7 gap-1">
@@ -62,7 +62,7 @@ function Calendar({ logsByDate, onDateClick }) {
           return (
             <div
               key={index}
-              className="text-center py-4 rounded-full cursor-pointer hover:bg-gray-100"
+              className="text-center py-4 rounded-full cursor-pointer hover:bg-[#faf0e6]"
               style={logType ? { backgroundColor: logType.color, color: 'white' } : {}}
               onClick={(e) => onDateClick(date, e)}
             >

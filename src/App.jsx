@@ -202,7 +202,7 @@ function App() {
     const [view, setView] = useState('calendar');
 
     return (
-        <div className="min-h-screen flex flex-col px-6 py-6">
+        <div className="min-h-screen flex flex-col px-6 py-6 bg-[#FaF0E6]">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold text-gray-800">
                     Period Tracker
@@ -213,7 +213,7 @@ function App() {
                         className={`px-4 py-2 rounded ${
                             view === 'calendar'
                                 ? 'bg-gray-800 text-white'
-                                : 'border border-gray-300 hover:bg-gray-50'
+                                : 'border border-gray-300 hover:bg-[#fbf8f3]'
                         }`}
                         onClick={() => setView('calendar')}
                     >
@@ -224,18 +224,18 @@ function App() {
                         className={`px-4 py-2 rounded ${
                             view === 'history'
                                 ? 'bg-gray-800 text-white'
-                                : 'border border-gray-300 hover:bg-gray-50'
+                                : 'border border-gray-300 hover:bg-[#fbf8f3]'
                         }`}
                         onClick={() => setView('history')}
                     >
-                        History
+                        View Logs
                     </button>
 
                     <button
                         className={`px-4 py-2 rounded ${
                             view === 'customize'
                                 ? 'bg-gray-800 text-white'
-                                : 'border border-gray-300 hover:bg-gray-50'
+                                : 'border border-gray-300 hover:bg-[#fbf8f3]'
                         }`}
                         onClick={() => setView('customize')}
                     >
@@ -277,6 +277,8 @@ function App() {
                         onCycleDayTypesChange={setCycleDayTypes}
                         onTypeUpdated={handleCycleDayTypeUpdated}
                         onTypeDeleted={handleCycleDayTypeDeleted}
+                        symptomTypes={symptomTypes}
+                        onSymptomTypesChange={setSymptomTypes}
                     />
                 )}
             </div>

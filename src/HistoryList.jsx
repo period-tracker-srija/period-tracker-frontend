@@ -30,7 +30,7 @@ function HistoryList({ logs, symptomTypes, onEdit, onDelete }) {
             {sortedLogs.map(log => (
                 <div
                     key={log.logDate}
-                    className="flex items-center justify-between gap-4 border border-gray-200 rounded-lg px-4 py-3"
+                    className="flex items-center justify-between gap-4 border border-[#e4dcd0] rounded-lg px-4 py-3 bg-[#fbf8f3]"
                 >
                     <div className="min-w-0">
                         <div className="font-medium text-gray-800">

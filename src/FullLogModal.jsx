@@ -93,7 +93,7 @@ function FullLogModal({ isOpen, onClose, cycleDayTypes, symptomTypes, initialDat
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-20">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-96 max-h-[85vh] overflow-y-auto flex flex-col gap-4">
+            <div className="bg-[#fbf8f3] rounded-lg shadow-lg p-6 w-96 max-h-[85vh] overflow-y-auto flex flex-col gap-4">
                 <h2 className="text-lg font-semibold">Full Log</h2>
 
                 <div className="flex flex-col gap-1">
