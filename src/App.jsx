@@ -18,19 +18,27 @@ function App() {
     useEffect(() => {
         fetch('/api/cycle-day-types')
             .then(res => res.json())
-            .then(setCycleDayTypes);
+            .then(data => {
+                if (Array.isArray(data)) setCycleDayTypes(data);
+            })
+            .catch(() => {});
     }, []);
 
     useEffect(() => {
         fetch('/api/symptom-types')
             .then(res => res.json())
-            .then(setSymptomTypes);
+            .then(data => {
+                if (Array.isArray(data)) setSymptomTypes(data);
+            })
+            .catch(() => {});
     }, []);
 
     useEffect(() => {
         fetch('/api/daily-logs')
             .then(res => res.json())
             .then(data => {
+                if(!Array.isArray(data)) return;
+
                 setLogs(data);
 
                 const map = {};
@@ -38,7 +46,8 @@ function App() {
                     map[log.logDate] = log.cycleDayType;
                 });
                 setLogsByDate(map);
-            });
+            })
+            .catch(() => {});
     }, []);
 
     const closeDropdown = () => {

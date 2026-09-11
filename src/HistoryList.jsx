@@ -12,9 +12,9 @@ function formatSymptomPreview(symptoms, symptomTypes) {
         .join(' . ');
 }
 
-function HistoryList({ logs, symptomTypes, onEdit, onDelete }) {
-    const sortedLogs = [...logs].sort((a, b) =>
-        b.logDate.localeCompare(a.logDate)
+function HistoryList({ logs = [], symptomTypes = [], onEdit, onDelete }) {
+    const sortedLogs = [...(Array.isArray(logs) ? logs : [])].sort((a, b) =>
+        (b.logDate || '').localeCompare(a.logDate || '')
     );
 
     if(sortedLogs.length === 0) {

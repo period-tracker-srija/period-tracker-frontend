@@ -27,12 +27,21 @@ function FullLogModal({ isOpen, onClose, cycleDayTypes, symptomTypes, initialDat
         fetch(`/api/daily-logs/${dateStr}`)
             .then(res => res.json())
             .then(data => {
+                if(!data || data.status) {
+                    setCycleDayTypeId('');
+                    setSymptomValues({});
+                    return;
+                }
                 setCycleDayTypeId(data.cycleDayType ? data.cycleDayType.id : '');
                 const values = {};
-                data.symptoms.forEach(s => {
+                (data.symptoms || []).forEach(s => {
                     values[s.symptomTypeId] = s.value;
                 });
                 setSymptomValues(values);
+            })
+            .catch(() => {
+                setCycleDayTypeId('');
+                setSymptomValues({});
             });
     };
 

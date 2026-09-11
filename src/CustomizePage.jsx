@@ -200,15 +200,19 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
         fetch('/api/cycle-day-types/all')
             .then(res => res.json())
             .then(data => {
+                if(!Array.isArray(data)) return;
                 setAllCycleDayTypes(data);
                 onCycleDayTypesChange(data.filter(t => t.active));
-            });
+            })
+            .catch(() => {});
         fetch('/api/symptom-types/all')
             .then(res => res.json())
             .then(data => {
+                if(!Array.isArray(data)) return;
                 setAllSymptomTypes(data);
                 onSymptomTypesChange(data.filter(s => s.active));
-            });
+            })
+            .catch(() => {});
     }, []);
 
     const handleCycleActiveToggle = (type, active) => {
