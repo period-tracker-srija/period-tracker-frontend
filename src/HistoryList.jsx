@@ -6,7 +6,11 @@ function formatSymptomPreview(symptoms, symptomTypes) {
             const type = symptomTypes.find(t => t.id === s.symptomTypeId);
             const name = type ? type.name : 'Symptom';
 
-            const value = Array.isArray(s.value) ? s.value.join(', ') : s.value;
+            const value = typeof s.value === 'boolean'
+                ? (s.value ? 'Yes' : 'No')
+                : Array.isArray(s.value)
+                    ? s.value.join(', ')
+                    : s.value;
             return `${name}: ${value}`;
         })
         .join(' . ');

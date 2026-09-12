@@ -13,6 +13,29 @@ function SymptomField({ symptomType, included, value, onToggle, onChange }) {
 
 function renderInput(symptomType, value, onChange) {
     switch (symptomType.inputType) {
+        case 'BOOLEAN':
+            return (
+                <div className="flex items-center gap-4 pl-6 text-sm">
+                    <label className="flex items-center gap-1">
+                        <input 
+                            type="radio"
+                            name={`bool-${symptomType.id}`}
+                            checked={value === true}
+                            onChange={() => onChange(true)}
+                        />
+                        Yes
+                    </label>
+                    <label className="flex items-center gap-1">
+                        <input 
+                            type="radio"
+                            name={`bool-${symptomType.id}`}
+                            checked={value === false}
+                            onChange={() => onChange(false)}
+                        />
+                        No
+                    </label>
+                </div>
+            );
         case 'SCALE':
             return (
                 <div className="flex items-center gap-2 pl-6">

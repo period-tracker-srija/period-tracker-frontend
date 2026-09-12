@@ -205,6 +205,15 @@ function App() {
         );
     };
 
+    const handleSymptomTypeDeleted = (deletedId) => {
+        setLogs((prev) =>
+            prev.map((log) => ({
+                ...log,
+                symptoms: (log.symptoms || []). filter((s) => s.symptomTypeId !== deletedId),
+            }))
+        );
+    };
+
     const [symptomTypes, setSymptomTypes] = useState([]);
 
     const [logs, setLogs] = useState([]);
@@ -288,6 +297,7 @@ function App() {
                         onTypeDeleted={handleCycleDayTypeDeleted}
                         symptomTypes={symptomTypes}
                         onSymptomTypesChange={setSymptomTypes}
+                        onSymptomDeleted={handleSymptomTypeDeleted}
                     />
                 )}
             </div>

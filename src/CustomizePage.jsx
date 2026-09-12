@@ -116,6 +116,7 @@ function SortableTypeRow({ type, canDelete, onNameBlur, onColorChange, onDelete,
 
 function inputTypeLabel(inputType) {
     switch(inputType) {
+        case 'BOOLEAN': return 'Yes / No'
         case 'SCALE': return 'Scale';
         case 'SINGLE_CHOICE': return 'Single choice'
         case 'MULTI_CHOICE': return 'Multi choice'
@@ -175,13 +176,13 @@ function SortableSymptomRow({ symptom, onNameBlur, onDelete, onActiveToggle }) {
                 className="px-2 py-1 text-sm text-red-600 hover:bg-red-50 rounded"
                 onClick={() => onDelete(symptom)}
             >
-                Remove
+                Delete
             </button>
         </div>
     );
 }
 
-function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, onTypeDeleted, symptomTypes, onSymptomTypesChange}) {
+function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, onTypeDeleted, symptomTypes, onSymptomTypesChange, onSymptomDeleted}) {
     const [newName, setNewName] = useState('');
     const [newColor, setNewColor] = useState('#cccccc');
     const [error, setError] = useState('');
@@ -286,7 +287,9 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                 return res.json();
             })
             .then(created => {
-                onCycleDayTypesChange([...cycleDayTypes, created]);
+                const next =  [...allCycleDayTypes, created];
+                setAllCycleDayTypes(next);
+                onCycleDayTypesChange(next.filter((t) => t.active));
                 setNewName('');
                 setNewColor('#cccccc');
             })
@@ -329,7 +332,9 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                 return res.json();
             })
             .then(created => {
-                onSymptomTypesChange([...symptomTypes, created]);
+                const next = [...allSymptomTypes, created];
+                setAllSymptomTypes(next);
+                onSymptomTypesChange(next.filter((s) => s.active));
                 setNewSymptomName('');
                 setNewInputType('SCALE');
                 setNewMinValue(1);
@@ -406,11 +411,13 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
     };
 
     const handleDelete = (type) => {
-        if (cycleDayTypes.length <= 1) {
-            setError('At least once cycle day type must exist');
+        if (allCycleDayTypes.length <= 1) {
+            setError('At least one cycle day type must exist');
             return;
         }
-        if (!window.confirm(`Delete "${type.name}"? Days using it will lose this type.`)) {
+        if (!window.confirm(
+            `Delete "${type.name}"? This permanently removes it and clears it from past logs. Toggle it off instead if you want to keep history.`
+        )) {
             return;
         }
         setError('');
@@ -422,14 +429,18 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                         throw new Error(text || 'Could not delete type');
                     });
                 }
-                onCycleDayTypesChange(cycleDayTypes.filter(t => t.id !== type.id));
+                const next = allCycleDayTypes.filter((t) => t.id !== type.id);
+                setAllCycleDayTypes(next);
+                onCycleDayTypesChange(next.filter((t) => t.active));
                 onTypeDeleted(type.id);
             })
             .catch(err => setError(err.message));
     };
 
     const handleSymptomDelete = (symptom) => {
-        if(!window.confirm(`Remove "${symptom.name}" from your active symptoms?`)) {
+        if(!window.confirm(
+            `Delete "${symptom.name}"? This permanently removes it and all logged value. Toggle it off instead if you want to keep history.`
+        )) {
             return;
         }
         setSymptomError('');
@@ -441,7 +452,10 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                         throw new Error(text || 'Could not remove symptom');
                     });
                 }
-                onSymptomTypesChange(symptomTypes.filter(s => s.id !== symptom.id));
+                const next = allSymptomTypes.filter((s) => s.id !== symptom.id);
+                setAllSymptomTypes(next);
+                onSymptomTypesChange(next.filter((s) => s.active));
+                onSymptomDeleted?.(symptom.id);
             })
             .catch(err => setSymptomError(err.message));
     };
@@ -510,7 +524,7 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                 </h3>
                 <p className="text-sm text-gray-500 mb-4">
                     Drag the dots to reorder. Higher items can show first on the calendar later.
-                    You must keep at least one type.
+                    Toggle off to hide a type from logging but keep it in history. Delete removes the type permanently and clears it from past logs.
                 </p>
 
                 {error && (
@@ -531,7 +545,7 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                                 <SortableTypeRow 
                                     key={type.id}
                                     type={type}
-                                    canDelete={cycleDayTypes.length > 1}
+                                    canDelete={allCycleDayTypes.length > 1}
                                     onNameBlur={handleNameBlur}
                                     onColorChange={handleColorChange}
                                     onDelete={handleDelete}
@@ -570,7 +584,8 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                     Symptoms
                 </h3>
                 <p className="text-sm text-gray-500 mb-4">
-                    Drag to reorder. Remove hides a symptom from logging.
+                    Drag to reorder. Higher items show first in the log. 
+                    Toggle off to hide a symptom from logging but keep its history. Delete removes the symptom permanently and all its logged values.
                 </p>
 
                 {symptomError && (
@@ -583,11 +598,11 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                     onDragEnd={handleSymptomDragEnd}
                 >
                     <SortableContext
-                        items={symptomTypes.map(s => s.id)}
+                        items={allSymptomTypes.map((s) => s.id)}
                         strategy={verticalListSortingStrategy}
                     >
                         <div className="flex flex-col gap-2 mb-4">
-                            {allSymptomTypes.map(symptom => (
+                            {allSymptomTypes.map((symptom) => (
                                 <SortableSymptomRow 
                                     key={symptom.id}
                                     symptom={symptom}
@@ -614,6 +629,7 @@ function CustomizePage({ cycleDayTypes, onCycleDayTypesChange, onTypeUpdated, on
                         onChange={(e) => setNewInputType(e.target.value)}
                         className="border border-gray-300 rounded px-2 py-1"
                     >
+                        <option value="BOOLEAN">Yes / No</option>
                         <option value="SCALE">Scale</option>
                         <option value="SINGLE_CHOICE">Single choice</option>
                         <option value="MULTI_CHOICE">Multi choice</option>

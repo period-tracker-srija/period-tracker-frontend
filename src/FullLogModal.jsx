@@ -4,11 +4,13 @@ import SymptomField from './SymptomField';
 
 function defaultValueForType(symptomType) {
     switch (symptomType.inputType) {
+        case 'BOOLEAN':
+            return true;
         case 'SCALE':
             return Math.round((symptomType.minValue + symptomType.maxValue) / 2);
         case 'SINGLE_CHOICE':
             return symptomType.options.length > 0 ? symptomType.options[0].label : '';
-        case 'MULTIPLE_CHOICE':
+        case 'MULTI_CHOICE':
             return [];
         case 'FREE_TEXT':
             return '';
@@ -100,6 +102,11 @@ function FullLogModal({ isOpen, onClose, cycleDayTypes, symptomTypes, initialDat
 
     if (!isOpen) return null;
 
+    const hasEmptyFreeText = Object.entries(symptomValues).some(([id, value]) => {
+        const type = symptomTypes.find(t => String(t.id) === String(id));
+        return type?.inputType === 'FREE_TEXT' && !String(value ?? '').trim();
+    });
+
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-20">
             <div className="bg-[#fbf8f3] rounded-lg shadow-lg p-6 w-96 max-h-[85vh] overflow-y-auto flex flex-col gap-4">
@@ -145,7 +152,17 @@ function FullLogModal({ isOpen, onClose, cycleDayTypes, symptomTypes, initialDat
 
                 <div className="flex justify-end gap-2 mt-2">
                     <button className="px-3 py-1 rounded hover:bg-gray-100" onClick={onClose}>Cancel</button>
-                    <button className="px-3 py-1 rounded bg-gray-800 text-white hover:bg-gray-700" onClick={handleSave}>Save</button>
+                    <button 
+                        className={`px-3 py-1 rounded text-white ${
+                            hasEmptyFreeText
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-gray-800 hover:bg-gray-700'
+                        }`} 
+                        disabled={hasEmptyFreeText}
+                        onClick={handleSave}
+                    >
+                        Save
+                    </button>
                 </div>
 
                 <div className="border-t border-gray-200 pt-3 flex justify-end">
